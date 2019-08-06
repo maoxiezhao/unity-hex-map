@@ -9,6 +9,12 @@ public class HexCell : MonoBehaviour
     public int elevation;
     public RectTransform uiRect;
 
+    public Vector3 Position {
+        get {
+            return transform.localPosition;
+        }
+    }
+
     [SerializeField]
     HexCell[] neighbors;
 
@@ -28,10 +34,13 @@ public class HexCell : MonoBehaviour
 
         Vector3 pos = transform.localPosition;
         pos.y = elevation * HexMetrics.elevationStep;
-        transform.position = pos;
+
+        // perturb
+        pos.y += (HexMetrics.SampleNoise(pos).y * 2f - 1f) * HexMetrics.elevationPerturbStrength;
+        transform.localPosition = pos;
 
         Vector3 uiPos = uiRect.localPosition;
-        uiPos.z = -elevation * HexMetrics.elevationStep;
+        uiPos.z = -pos.y;
         uiRect.localPosition = uiPos;
     }
 

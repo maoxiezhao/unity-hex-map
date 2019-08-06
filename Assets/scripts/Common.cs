@@ -37,19 +37,38 @@ public enum HexEdgeType
     HexEdgeType_Cliff
 }
 
+public struct EdgeVertices
+{
+    public Vector3 v1, v2, v3, v4;
+
+    public EdgeVertices(Vector3 corner1, Vector3 corner2)
+    {
+        v1 = corner1;
+        v2 = Vector3.Lerp(corner1, corner2, 1f / 3f);
+        v3 = Vector3.Lerp(corner1, corner2, 2f / 3f);
+        v4 = corner2;
+    }
+}
+
 public static class HexMetrics
 {
     public const float outerRadius = 10.0f;
     public const float innerRadius = outerRadius * 0.866f;
-    public const float solidFactor = 0.75f;
+    public const float solidFactor = 0.8f;
     public const float blendFactor = 1f - solidFactor;
 
-    public const float elevationStep = 5f;
+    public const float elevationStep = 3f;
 
     public const int terracesPerSlope = 2;  // 一个斜坡插入两个台阶
     public const int terraceSteps = 2 * terracesPerSlope + 1;   // 一个斜坡处理的步长
     public const float horizontalTerraceStepSize = 1.0f / terraceSteps;
     public const float verticalTerraceStepSize = 1.0f / (terracesPerSlope + 1);
+
+    public static Texture2D noiseSource;
+    public const float cellPerturbStrength = 4f;    // 顶点扰动强度
+    public const float noiseScale = 0.003f;         // 噪声采样纹理缩放
+    public const float elevationPerturbStrength = 1.5f; // 海拔扰动强度
+
 
     private static Vector3[] corners = {
         new Vector3(0.0f, 0.0f, outerRadius),
@@ -86,6 +105,7 @@ public static class HexMetrics
         return (corners[(int)dir] + corners[(int)dir + 1]) * blendFactor;
     }
 
+    // 台阶插值---------------------------------------------------------
     // 根据step差值计算当前位置
     public static Vector3 TerraceLerp(Vector3 a, Vector3 b, int step)
     {
@@ -111,5 +131,24 @@ public static class HexMetrics
         if (delta < 1) return HexEdgeType.HexEdgeType_Flat;
         else if (delta < 2) return HexEdgeType.HexEdgeType_Slope;
         else return HexEdgeType.HexEdgeType_Cliff;
+    }
+
+    public static EdgeVertices TerraceLerp(EdgeVertices a, EdgeVertices b, int step)
+    {
+        EdgeVertices result;
+        result.v1 = TerraceLerp(a.v1, b.v1, step);
+        result.v2 = TerraceLerp(a.v2, b.v2, step);
+        result.v3 = TerraceLerp(a.v3, b.v3, step);
+        result.v4 = TerraceLerp(a.v4, b.v4, step);
+        return result;
+    }
+
+    //--------------------------------------------------------------------------
+
+    public static Vector4 SampleNoise(Vector3 position)
+    {
+        return noiseSource.GetPixelBilinear(
+            position.x * noiseScale, position.z * noiseScale
+        );
     }
 }

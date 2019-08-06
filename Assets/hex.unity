@@ -354,6 +354,7 @@ MonoBehaviour:
     z: 0
   color: {r: 0, g: 0, b: 0, a: 0}
   elevation: 0
+  uiRect: {fileID: 0}
   neighbors:
   - {fileID: 0}
   - {fileID: 0}
@@ -476,6 +477,7 @@ MonoBehaviour:
   cellLabelPrefab: {fileID: 2026806583}
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
   touchedColor: {r: 1, g: 0, b: 1, a: 1}
+  noiseSource: {fileID: 2800000, guid: a0b74505e837d6e4eb46a7c0909bca5c, type: 3}
 --- !u!4 &624953311
 Transform:
   m_ObjectHideFlags: 0
