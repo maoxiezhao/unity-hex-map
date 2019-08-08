@@ -5,15 +5,33 @@ using UnityEngine;
 public class HexCell : MonoBehaviour
 {
     public HexCoordinates coordinates;
-    public Color color;
-    public int elevation;
+    public int elevation = int.MinValue;
+
+    public Transform uiTransform;
     public RectTransform uiRect;
+
+    public HexGridChunk chunk;
 
     public Vector3 Position {
         get {
             return transform.localPosition;
         }
     }
+
+    public Color Color {
+        get {
+            return color;
+        }
+        set {
+            if (color == value) {
+                return;
+            }
+
+            color = value;
+            Refresh();
+        }
+    }
+    public Color color;
 
     [SerializeField]
     HexCell[] neighbors;
@@ -30,6 +48,10 @@ public class HexCell : MonoBehaviour
 
     public void SetElevation(int elevation)
     {
+        if (elevation == this.elevation) {
+            return;
+        }
+
         this.elevation = elevation;
 
         Vector3 pos = transform.localPosition;
@@ -42,6 +64,8 @@ public class HexCell : MonoBehaviour
         Vector3 uiPos = uiRect.localPosition;
         uiPos.z = -pos.y;
         uiRect.localPosition = uiPos;
+
+        Refresh();
     }
 
     public HexEdgeType GetHexEdgeType(HexDirection dir)
@@ -56,5 +80,20 @@ public class HexCell : MonoBehaviour
         return HexMetrics.GetEdgeTypeByElevation(
             elevation, other.elevation
         );
+    }
+
+    void Refresh()
+    {
+        if (chunk != null) {
+            chunk.Refresh();
+
+            for (int i = 0; i < neighbors.Length; i++)
+            {
+                HexCell neighbor = neighbors[i];
+                if (neighbor != null && neighbor.chunk != chunk) {
+                    neighbor.chunk.Refresh();
+                }
+            }
+        }
     }
 }

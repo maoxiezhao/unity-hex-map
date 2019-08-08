@@ -69,6 +69,7 @@ public static class HexMetrics
     public const float noiseScale = 0.003f;         // 噪声采样纹理缩放
     public const float elevationPerturbStrength = 1.5f; // 海拔扰动强度
 
+    public const int chunkSizeX = 5, chunkSizeZ = 5;
 
     private static Vector3[] corners = {
         new Vector3(0.0f, 0.0f, outerRadius),

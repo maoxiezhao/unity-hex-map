@@ -7,9 +7,9 @@ public class HexCellMesh : MonoBehaviour
 {
 
     Mesh hexMesh;
-    List<Vector3> vertices;     // 顶点信息
-    List<int> triangels;        // indices信息
-    List<Color> colors;
+    static List<Vector3> vertices = new List<Vector3>();     // 顶点信息
+    static List<int> triangels = new List<int>();        // indices信息
+    static List<Color> colors = new List<Color>();
     MeshCollider meshCollider;
 
     private void Awake()
@@ -18,10 +18,6 @@ public class HexCellMesh : MonoBehaviour
         meshCollider = gameObject.AddComponent<MeshCollider>();
 
         hexMesh.name = "HexMesh";
-
-        vertices = new List<Vector3>();
-        triangels = new List<int>();
-        colors = new List<Color>();
     }
 
     public void Triangulate(HexCell[] cells)
@@ -66,6 +62,10 @@ public class HexCellMesh : MonoBehaviour
     //    center
     private void Triangulate(HexDirection dir, HexCell cell)
     {
+        if (cell == null) {
+            return;
+        }
+
         Vector3 center = cell.Position;
         Vector3 v1 = center + HexMetrics.GetFirstSolidCorner(dir);
         Vector3 v2 = center + HexMetrics.GetSecondSolidCorner(dir);
