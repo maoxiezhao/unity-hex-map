@@ -39,14 +39,16 @@ public enum HexEdgeType
 
 public struct EdgeVertices
 {
-    public Vector3 v1, v2, v3, v4;
+    public Vector3 v1, v2, v3, v4, v5;
+    //public Vector3 v5;  // for river 
 
-    public EdgeVertices(Vector3 corner1, Vector3 corner2)
+    public EdgeVertices(Vector3 corner1, Vector3 corner2, float outerStep = 0.25f)
     {
         v1 = corner1;
-        v2 = Vector3.Lerp(corner1, corner2, 1f / 3f);
-        v3 = Vector3.Lerp(corner1, corner2, 2f / 3f);
-        v4 = corner2;
+        v2 = Vector3.Lerp(corner1, corner2, outerStep);
+        v3 = Vector3.Lerp(corner1, corner2, 0.5f);
+        v4 = Vector3.Lerp(corner1, corner2, 1 - outerStep);
+        v5 = corner2;
     }
 }
 
@@ -65,9 +67,11 @@ public static class HexMetrics
     public const float verticalTerraceStepSize = 1.0f / (terracesPerSlope + 1);
 
     public static Texture2D noiseSource;
-    public const float cellPerturbStrength = 4f;    // 顶点扰动强度
+    public const float cellPerturbStrength = 0.0f; //4f;    // 顶点扰动强度
     public const float noiseScale = 0.003f;         // 噪声采样纹理缩放
     public const float elevationPerturbStrength = 1.5f; // 海拔扰动强度
+
+    public const float streamBedElevationOffset = -1f; // 河道（edgeVertices)中间点偏移量
 
     public const int chunkSizeX = 5, chunkSizeZ = 5;
 
@@ -141,6 +145,7 @@ public static class HexMetrics
         result.v2 = TerraceLerp(a.v2, b.v2, step);
         result.v3 = TerraceLerp(a.v3, b.v3, step);
         result.v4 = TerraceLerp(a.v4, b.v4, step);
+        result.v5 = TerraceLerp(a.v5, b.v5, step);
         return result;
     }
 

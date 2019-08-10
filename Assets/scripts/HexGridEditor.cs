@@ -10,11 +10,18 @@ public class HexGridEditor : MonoBehaviour {
 
     private bool applyColor = true;
     private Color currentColor;
-
     private bool applyElevation = true;
     private int currentElevation;
-
     private int brushSize = 0;
+
+    private bool isDrag = false;
+    HexDirection dragDirection;
+    HexCell previouseCell;
+
+    enum OptionalToggle {
+        Ignore, Yes, No
+    }
+    OptionalToggle riverMode;
 
     private void Awake()
     {
@@ -25,8 +32,11 @@ public class HexGridEditor : MonoBehaviour {
     void Update ()
     {
         if (Input.GetMouseButton(0) &&
-            !EventSystem.current.IsPointerOverGameObject()){
+            !EventSystem.current.IsPointerOverGameObject()) {
             HandleInput();
+        }
+        else {
+            previouseCell = null;
         }
 	}
 
@@ -36,8 +46,33 @@ public class HexGridEditor : MonoBehaviour {
         RaycastHit hit;
         if (Physics.Raycast(inputRay, out hit)) {
             HexCell cell = hexGrid.GetCell(hit.point);
+            if (previouseCell && previouseCell != cell){
+                ValidateDrag(cell);
+            }
+            else {
+                isDrag = false;
+            }
+
             EditCells(cell);
+            previouseCell = cell;
         }
+        else {
+            previouseCell = null;
+        }
+    }
+
+    private void ValidateDrag(HexCell currentCell)
+    {
+        for (dragDirection = HexDirection.HexDirection_NE; dragDirection <= HexDirection.HexDirection_NW; dragDirection++)
+        {
+            if (previouseCell.GetNeighbor(dragDirection) == currentCell)
+            {
+                isDrag = true;
+                return;
+            }
+        }
+
+        isDrag = false;
     }
 
     public void SelectColor(int index)
@@ -100,10 +135,26 @@ public class HexGridEditor : MonoBehaviour {
         if (applyElevation) {
             cell.SetElevation(currentElevation);
         }
+
+        if (riverMode == OptionalToggle.No) {
+            cell.RemoveRiver();
+        }
+        else if (isDrag && riverMode == OptionalToggle.Yes)
+        {
+            HexCell otherCell = cell.GetNeighbor(dragDirection.Opposite());
+            if (otherCell != null) {
+                otherCell.SetOutgoingRiver(dragDirection);
+            }
+        }
     }
 
     public void ShowUILable(bool visible)
     {
         hexGrid.ShowUILable(visible);
+    }
+
+    public void SetRiverMode(int mode)
+    {
+        riverMode = (OptionalToggle)(mode);
     }
 }
