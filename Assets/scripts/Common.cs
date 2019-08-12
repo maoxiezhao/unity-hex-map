@@ -28,6 +28,18 @@ public static class HexDirectionExtensions
     {
         return dir == HexDirection.HexDirection_NW ? HexDirection.HexDirection_NE : (dir + 1);
     }
+
+    public static HexDirection Previous2(this HexDirection dir)
+    {
+        dir -= 2;
+        return dir >= HexDirection.HexDirection_NE ? dir : (dir + 6);
+    }
+
+    public static HexDirection Next2(this HexDirection dir)
+    {
+        dir += 2;
+        return dir <= HexDirection.HexDirection_NW ? dir : (dir - 6);
+    }
 }
 
 public enum HexEdgeType
@@ -54,8 +66,11 @@ public struct EdgeVertices
 
 public static class HexMetrics
 {
+    public const float outerToInner = 0.8660254f;
+    public const float innerToOuter = 1.0f / outerToInner;
+
     public const float outerRadius = 10.0f;
-    public const float innerRadius = outerRadius * 0.866f;
+    public const float innerRadius = outerRadius * outerToInner;
     public const float solidFactor = 0.8f;
     public const float blendFactor = 1f - solidFactor;
 
@@ -67,11 +82,12 @@ public static class HexMetrics
     public const float verticalTerraceStepSize = 1.0f / (terracesPerSlope + 1);
 
     public static Texture2D noiseSource;
-    public const float cellPerturbStrength = 0.0f; //4f;    // 顶点扰动强度
+    public const float cellPerturbStrength = 4f;    // 顶点扰动强度
     public const float noiseScale = 0.003f;         // 噪声采样纹理缩放
     public const float elevationPerturbStrength = 1.5f; // 海拔扰动强度
 
-    public const float streamBedElevationOffset = -1f; // 河道（edgeVertices)中间点偏移量
+    public const float streamBedElevationOffset = -1.5f; // 河道高度（edgeVertices)中间点偏移量
+    public const float riverElevationOffset = -0.5f;   // 河面高度偏移值
 
     public const int chunkSizeX = 5, chunkSizeZ = 5;
 
@@ -108,6 +124,11 @@ public static class HexMetrics
     public static Vector3 GetBridge(HexDirection dir)
     {
         return (corners[(int)dir] + corners[(int)dir + 1]) * blendFactor;
+    }
+
+    public static Vector3 GetSolidEdgeMiddle(HexDirection dir)
+    {
+        return (corners[(int)dir] + corners[(int)dir + 1]) * 0.5f * solidFactor;
     }
 
     // 台阶插值---------------------------------------------------------
@@ -156,5 +177,13 @@ public static class HexMetrics
         return noiseSource.GetPixelBilinear(
             position.x * noiseScale, position.z * noiseScale
         );
+    }
+
+    public static Vector3 Perturb(Vector3 pos)
+    {
+        Vector3 sample = SampleNoise(pos);
+        pos.x += (sample.x * 2.0f - 1.0f) * cellPerturbStrength;
+        pos.z += (sample.z * 2.0f - 1.0f) * cellPerturbStrength;
+        return pos;
     }
 }

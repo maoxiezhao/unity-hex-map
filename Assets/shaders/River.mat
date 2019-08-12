@@ -6,8 +6,8 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Hexmaterial
-  m_Shader: {fileID: 4800000, guid: a0354452459b27047b90cd4c2952c3a0, type: 3}
+  m_Name: River
+  m_Shader: {fileID: 4800000, guid: 8ac0215f3777f9c4a8a5aa3183af1786, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -39,7 +39,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: a0b74505e837d6e4eb46a7c0909bca5c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -72,5 +72,5 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.23713236, g: 0.5069725, b: 0.9485294, a: 0.191}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

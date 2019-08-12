@@ -220,5 +220,12 @@ public class HexCell : MonoBehaviour
         float offset = HexMetrics.streamBedElevationOffset * HexMetrics.elevationStep;
         return elevation + offset;
     }
+
+    public float RiverSurfaceY {
+        get {
+            return (elevation + HexMetrics.riverElevationOffset) * HexMetrics.elevationStep;
+        }
+    }
+
     //------------------------------------------------
 }
